@@ -143,8 +143,9 @@ drawfire (void)
 static void 
 game (void)
 {
+  int event;
   gentable ();
-  while (aa_getevent(context, 0) == AA_NONE)
+  while (!(event = aa_getevent(context, 0)) || event == AA_RESIZE)
     {
       drawfire ();
     }
@@ -158,6 +159,7 @@ main (int argc, char **argv)
       exit (1);
     }
   initialize ();
+  aa_resizehandler(context, (void *)aa_resize); // resize handler added by JEH
   game ();
   uninitialize ();
   return 1;
