@@ -5,5 +5,5 @@
 char *
 aa_image (aa_context *a)
 {
-  return a->imagebuffer;
+  return (char *)a->imagebuffer;
 }

@@ -332,7 +332,7 @@ __AA_CONST struct aa_format * __AA_CONST aa_formats[] =
     NULL
 };
 
-struct aa_driver save_d;
+__AA_CONST struct aa_driver save_d;
 #define FORMAT ((struct aa_savedata *)c->driverdata)->format
 #define DATA ((struct aa_savedata *)c->driverdata)
 

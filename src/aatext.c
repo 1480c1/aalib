@@ -4,5 +4,5 @@
 char *
 aa_text (aa_context *a)
 {
-  return a->textbuffer;
+  return (char *)a->textbuffer;
 }

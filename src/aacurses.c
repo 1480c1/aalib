@@ -17,7 +17,7 @@
 #endif
 #include "aalib.h"
 #include "aaint.h"
-struct aa_driver curses_d;
+__AA_CONST struct aa_driver curses_d;
 int __curses_is_up;
 int __resized_curses;
 static int uninitcurses;

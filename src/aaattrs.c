@@ -4,5 +4,5 @@
 char *
 aa_attrs (aa_context *a)
 {
-  return a->attrbuffer;
+  return (char *)a->attrbuffer;
 }

@@ -4322,7 +4322,9 @@ EOF
 fi
 echo "Keyboard drivers:"
 if test  "$linux_driver_test" = yes; then
+ if test "x$system" = xLinux; then
    echo " Linux console"
+ fi
 fi
 if test  "$slang_kbddriver" = true; then
   echo " slang"

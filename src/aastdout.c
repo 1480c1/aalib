@@ -32,7 +32,7 @@ static void stdout_flush(aa_context * c)
 static void stdout_gotoxy(aa_context * c, int x, int y)
 {
 }
-struct aa_driver stdout_d =
+__AA_CONST struct aa_driver stdout_d =
 {
     "stdout", "Standard output driver",
     stdout_init,

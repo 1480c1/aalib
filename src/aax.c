@@ -8,7 +8,7 @@
 #include "aalib.h"
 #include "aaint.h"
 #include "aaxint.h"
-struct aa_driver X11_d;
+__AA_CONST struct aa_driver X11_d;
 #define C2 0x68
 #define C1 0xB2
 #define dr (d->pixmapmode?d->pi:d->wi)
@@ -111,7 +111,7 @@ static int X_init(__AA_CONST struct aa_hardware_params *p, __AA_CONST void *none
 	    XSetFont(d->dp, d->specialGC, d->font);
 	    for (i = 0; i < 256; i++) {
 		c = i;
-		XDrawString(d->dp, d->pi, d->specialGC, 0, (i + 1) * d->fontheight - d->font_s->descent, &c, 1);
+		XDrawString(d->dp, d->pi, d->specialGC, 0, (i + 1) * d->fontheight - d->font_s->descent, (char *)&c, 1);
 	    }
 	    image = XGetImage(d->dp, d->pi, 0, 0, 8, 256 * d->fontheight, 1, XYPixmap);
 	    if (image != NULL) {
@@ -169,7 +169,7 @@ static int X_init(__AA_CONST struct aa_hardware_params *p, __AA_CONST void *none
 }
 int __aa_X_getsize(struct aa_context *c,struct xdriverdata *d)
 {
-    int px, py;
+    unsigned int px, py;
     int tmp;
     Window wtmp;
     XSync(d->dp, 0);
@@ -310,7 +310,7 @@ static void MyDrawString(struct xdriverdata *d,int attr, int x, int y, unsigned 
 	it->nchars += i;
     } else {
 	nitem[y][a]++;
-	it->chars = c;
+	it->chars = (char *)c;
 	it->nchars = i;
 	it->font = d->font;
 	drawed = 1;

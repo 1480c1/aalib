@@ -57,7 +57,7 @@ static int decodekey(XEvent * ev)
     if(strlen(name)!=1) return (AA_UNKNOWN+ksym);
     return name[0];
 }
-int __X_mousex, __X_mousey, __X_buttons;
+extern int __X_mousex, __X_mousey, __X_buttons;
 static int X_getchar(aa_context * c, int wait)
 {
     struct xdriverdata *d=c->driverdata;

@@ -9,7 +9,7 @@
 #endif
 #include "aalib.h"
 #include "aaint.h"
-struct aa_driver slang_d;
+__AA_CONST struct aa_driver slang_d;
 int __slang_is_up = 0;
 int __resized_slang = 0;
 static int uninitslang;

@@ -122,7 +122,7 @@ int aa_parseoptions(struct aa_hardware_params *p, aa_renderparams * r, int *argc
 	} else if (strcmp(argv[i], "-nodither") == 0) {
 	    aa_remove(i, argc, argv);
 	    i--;
-	    r->dither = 0;
+	    r->dither = AA_NONE;
 	} else if (strcmp(argv[i], "-floyd_steinberg") == 0) {
 	    aa_remove(i, argc, argv);
 	    i--;
