@@ -6,6 +6,7 @@ Noteworthly changes in aalib-1.3 are:
   - Comments in aalib.h
   - Many "const" keywords added
   - Configure no longer attempts to guess optimization switches.
+  - c2man generated manual pages added
 
 Noteworthly changes in aalib-1.1 are: 
 
