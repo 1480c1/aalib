@@ -1,7 +1,4 @@
 #include <stdio.h>
-#include <string.h>
-#include <malloc.h>
-#include <stdlib.h>
 #include "aalib.h"
 
 #define XSIZ aa_imgwidth(context)
@@ -10,7 +7,6 @@
 static aa_context *context;
 static aa_renderparams *params;
 static aa_palette palette;
-static unsigned char *bitmap;
 static unsigned int table[MAXTABLE];
 __AA_CONST static int pal[] =
 {
@@ -48,7 +44,7 @@ __AA_CONST static int pal[] =
   63, 63, 56, 63, 63, 57, 63, 63, 58, 63, 63, 59, 63, 63, 60, 63, 63, 61, 63, 63, 62, 63, 63, 63};
 
 
-static void 
+static void
 initialize (void)
 {
   int i;
@@ -58,22 +54,20 @@ initialize (void)
       printf ("Failed to initialize aalib\n");
       exit (1);
     }
-  aa_autoinitkbd(context, 0);
+  aa_autoinitkbd (context, 0);
   params = aa_getrenderparams ();
-  bitmap = aa_image (context);
   for (i = 0; i < 256; i++)
     aa_setpalette (palette, i, pal[i * 3] * 4,
-		   pal[i * 3 + 1] * 4,
-		   pal[i * 3 + 2] * 4);
+		   pal[i * 3 + 1] * 4, pal[i * 3 + 2] * 4);
   aa_hidecursor (context);
 }
-static void 
+static void
 uninitialize (void)
 {
   aa_close (context);
   exit (0);
 }
-static void 
+static void
 gentable (void)
 {
   unsigned int i, p2;
@@ -91,66 +85,67 @@ gentable (void)
 	table[i] = 0;
     }
 }
+
 #define MA 5
-static void 
+static void
 firemain (void)
 {
   register unsigned int i;
   unsigned char *p;
+  char *bitmap = aa_image (context);
   i = 0;
 #define END (bitmap + XSIZ * YSIZ)
-  for (p = bitmap;
-       p <= (unsigned char *) (END); p += 1)
+  for (p = bitmap; p <= (unsigned char *) (END); p += 1)
     {
-      *p = table[
-		  (*(p + XSIZ - 1) + *(p + XSIZ + 1) + *(p + XSIZ)) +
-		  (*(p + 2 * XSIZ - 1) + *(p + 2 * XSIZ + 1))];
+      *p = table[(*(p + XSIZ - 1) + *(p + XSIZ + 1) + *(p + XSIZ)) +
+		 (*(p + 2 * XSIZ - 1) + *(p + 2 * XSIZ + 1))];
     }
 }
 
 #define min(x,y) ((x)<(y)?(x):(y))
-static void 
+static void
 drawfire (void)
 {
   unsigned int i, last1, i1, i2;
   static int loop = 0, sloop = 0, height = 0;
   register unsigned char *p;
+  char *bitmap = aa_image (context);
+
   height++;
   loop--;
   if (loop < 0)
     loop = rand () % 3, sloop++;;
   i1 = 1;
   i2 = 4 * XSIZ + 1;
-  for (p = (char *) bitmap + XSIZ * (YSIZ + 0); p < ((unsigned char *) bitmap + XSIZ * (YSIZ + 1)); p++, i1 += 4, i2 -= 4)
+  for (p = (char *) bitmap + XSIZ * (YSIZ + 0);
+       p < ((unsigned char *) bitmap + XSIZ * (YSIZ + 1));
+       p++, i1 += 4, i2 -= 4)
     {
       last1 = rand () % min (i1, min (i2, height));
       i = rand () % 6;
-      for (; p < (unsigned char *) bitmap + XSIZ * (YSIZ + 1) && i != 0; p++, i--, i1 += 4, i2 -= 4)
-	*p = last1, last1 += rand () % 6 - 2,
-	  *(p + XSIZ) = last1, last1 += rand () % 6 - 2;
+      for (; p < (unsigned char *) bitmap + XSIZ * (YSIZ + 1) && i != 0;
+	   p++, i--, i1 += 4, i2 -= 4)
+	*p = last1, last1 += rand () % 6 - 2, *(p + XSIZ) = last1, last1 +=
+	  rand () % 6 - 2;
       *(p + 2 * XSIZ) = last1, last1 += rand () % 6 - 2;
     }
-  /*
-     for(p=bitmap+XSIZ*YSIZ;p<bitmap+(YSIZ+2)*XSIZ;p++)
-     {
-     *p=rand();
-     } */
   i = 0;
   firemain ();
-  aa_renderpalette (context, palette, params, 0, 0, aa_scrwidth (context), aa_scrheight (context));
+  aa_renderpalette (context, palette, params, 0, 0, aa_scrwidth (context),
+		    aa_scrheight (context));
   aa_flush (context);
 }
-static void 
+static void
 game (void)
 {
   int event;
   gentable ();
-  while (!(event = aa_getevent(context, 0)) || event == AA_RESIZE)
+  while (!(event = aa_getevent (context, 0)) || event == AA_RESIZE)
     {
       drawfire ();
     }
 }
-int 
+int
 main (int argc, char **argv)
 {
   if (!aa_parseoptions (NULL, NULL, &argc, argv) || argc != 1)
@@ -159,7 +154,7 @@ main (int argc, char **argv)
       exit (1);
     }
   initialize ();
-  aa_resizehandler(context, (void *)aa_resize); 
+  aa_resizehandler (context, (void *) aa_resize);
   game ();
   uninitialize ();
   return 1;

@@ -140,7 +140,7 @@ int main (int argc, char *argv[])
           LIBS="$LIBS $AALIB_LIBS"
           AC_TRY_LINK([
 #include <stdio.h>
-#include "AALIB.h"
+#include "aalib.h"
 ],      [ return 0; ],
         [ echo "*** The test program compiled, but did not run. This usually means"
           echo "*** that the run-time linker is not finding AALIB or finding the wrong"
