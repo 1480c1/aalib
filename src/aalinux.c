@@ -16,6 +16,7 @@
 #include "aalib.h"
 #include "aaint.h"
 #define MAXVCS 10
+static int readonly=1;
 static int cursorx, cursory;
 static FILE *vc[MAXVCS];
 static int nvcs;
@@ -62,6 +63,7 @@ linux_init (__AA_CONST struct aa_hardware_params *p, __AA_CONST void *none,
   close (fd);
   if (major != 4 || minor >= 64)
     return (0);
+  readonly = 0;
   if ((env = getenv ("AAVCS")) != NULL)
     {
       int p1 = 0, p2;
@@ -78,6 +80,8 @@ linux_init (__AA_CONST struct aa_hardware_params *p, __AA_CONST void *none,
 	  tmp[p2] = 0;
 	  vc[nvcs] = fopen (tmp, "w+");
 	  if (vc[nvcs] == NULL)
+	    vc[nvcs] = fopen (tmp, "w"), readonly = 1;
+	  if (vc[nvcs] == NULL)
 	    return 0;
 	  nvcs++;
 	}
@@ -86,6 +90,8 @@ linux_init (__AA_CONST struct aa_hardware_params *p, __AA_CONST void *none,
     {
       sprintf (fname, "/dev/vcsa%i", vt);
       vc[0] = fopen (fname, "w+");
+      if (vc[0] == NULL)
+	vc[0] = fopen (tmp, "w"), readonly = 1;
       nvcs = 1;
     }
   if (vc[0] == NULL)
@@ -149,19 +155,41 @@ static void
 linux_getsize (aa_context * c, int *width, int *height)
 {
   int i;
-  struct { unsigned char lines, cols, x, y; }
-    scrn = { 0, 0, 0, 0};
+  struct
+  {
+    unsigned char lines, cols, x, y;
+  }
+  scrn =
+  {
+  0, 0, 0, 0};
   *width = 0;
   *height = 65536;
-  for (i = 0; i < nvcs; i++)
+  if (!readonly)
     {
-      (void) fseek (vc[i], 0, SEEK_SET);
-      (void) fread (&scrn, 4, 1, vc[i]);
-      sizes[0][i] = scrn.cols;
-      sizes[1][i] = scrn.lines;
-      *width = *width + scrn.cols;
-      if (*height > scrn.lines)
-	*height = scrn.lines;
+      for (i = 0; i < nvcs; i++)
+	{
+	  (void) fseek (vc[i], 0, SEEK_SET);
+	  (void) fread (&scrn, 4, 1, vc[i]);
+	  sizes[0][i] = scrn.cols;
+	  sizes[1][i] = scrn.lines;
+	  *width = *width + scrn.cols;
+	  if (*height > scrn.lines)
+	    *height = scrn.lines;
+	}
+    }
+  else
+    {
+      struct winsize ws;
+      if (ioctl (2, TIOCGWINSZ, &ws) == 0)
+	{
+	  *width = ws.ws_col * nvcs;
+	  *height = ws.ws_row;
+	}
+      else
+	{			/* best guess */
+	  *width = 80;
+	  *height = 25;
+	}
     }
 #ifdef GPM_MOUSEDRIVER
   gpm_mx = *width - 1;

@@ -2,6 +2,7 @@ struct xdriverdata {
   Display *dp;
   Window wi;
   Pixmap pi;
+  int imgwidth, imgheight;
   XSetWindowAttributes attr;
   int fontheight;
   int fontwidth;

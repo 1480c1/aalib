@@ -31,7 +31,7 @@ static int decodekey(XEvent * ev)
 {
     KeySym ksym;
     char name[256];
-    switch (ksym = XLookupKeysym(&ev->xkey, ev->xkey.state)) {
+    switch (ksym = XLookupKeysym(&ev->xkey, 0)) {
     case XK_Left:
 	return (AA_LEFT);
     case XK_Right:

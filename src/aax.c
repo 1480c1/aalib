@@ -281,12 +281,14 @@ int __aa_X_getsize(struct aa_context *c,struct xdriverdata *d)
 	    XFillRectangle(d->dp, d->pi, d->blackGC, 0, 0, d->pixelwidth, d->pixelheight);
 	    XSetWindowBackgroundPixmap(d->dp, d->wi, d->pi);
 	}
+	c->driverparams.mmwidth = DisplayWidthMM(d->dp, d->screen) * d->pixelwidth / DisplayWidth(d->dp, d->screen);
+	c->driverparams.mmheight = DisplayHeightMM(d->dp, d->screen) * d->pixelheight / DisplayHeight(d->dp, d->screen);
 	if (d->previoust != NULL)
 	    free(d->previoust), free(d->previousa);
 	d->previoust=NULL;
 	d->previousa=NULL;
-	c->driverparams.mmwidth = DisplayWidthMM(d->dp, d->screen) * d->pixelwidth / DisplayWidth(d->dp, d->screen);
-	c->driverparams.mmheight = DisplayHeightMM(d->dp, d->screen) * d->pixelheight / DisplayHeight(d->dp, d->screen);
+	X_flush(c);
+	XFlush(d->dp);
     }
     XSync(d->dp, 0);
     return (tmp);
@@ -439,6 +441,22 @@ static void X_flush(aa_context * c)
     alloctables(d);
     drawed = 0;
     area = 0;
+    if (aa_imgwidth(c) != d->imgwidth || aa_imgheight(c) != d->imgheight)
+      {
+	if (d->previoust != NULL)
+	    free(d->previoust), free(d->previousa);
+	d->previoust=NULL;
+	d->previousa=NULL;
+        d->imgwidth = aa_imgwidth(c);
+        d->imgheight =aa_imgheight(c);
+	if (!d->pixmapmode) {
+	    XSetWindowBackground(d->dp, d->wi, d->inverted ? d->invertedblack : d->black);
+	} else {
+	    XFillRectangle(d->dp, d->pi, d->blackGC, 0, 0, d->pixelwidth, d->pixelheight);
+	    XSetWindowBackgroundPixmap(d->dp, d->wi, d->pi);
+	    XClearWindow(d->dp, d->wi);
+	}
+      }
     nrectangles[0] = 0;
     nrectangles[1] = 0;
     nrectangles[2] = 0;
