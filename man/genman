@@ -1,0 +1,56 @@
+# The manual pages are automatically generated from aalib.h using c2man
+# utility using this obscure script.
+# Also reference.texinfo is produced.
+ln -s ../src/aalib.h .
+c2man -v aalib.h
+c2man -v -Tt,t -e -x"SEE ALSO" aalib.h
+reference="../doc/reference.texinfo"
+rm $reference
+oldname=""
+currname=""
+nexname=""
+echo "
+@c Automatically generated file. DO NOT EDIT! it is generated according to the
+@c aalib.h header file.
+
+@node Reference, Index, Designing new driver, Top
+@appendix Reference
+@menu
+" >>$reference
+for name in *.texi ; do
+name=`basename $name .texi`
+printf "%-25s" "* $name::" >>$reference
+sed "3p;d" <$name.texi >>$reference
+
+done
+echo "
+
+@end menu
+" >>$reference
+
+for name in *.texi ; do
+oldname="$currname"
+currname="$nextname"
+nextname=`basename $name .texi`
+if [ "$currname" != "" ] ; then
+echo "" >>$reference
+echo "" >>$reference
+echo "" >>$reference
+echo "" >>$reference
+echo "@node $currname, $nextname, $oldname, Reference" >>$reference
+echo "@findex $currname" >>$reference
+cat $currname.texi | sed 's/section/appendixsec/g;3d;s/@heading SYNOPSIS//g;s/DESCRIPTION/Description/;s/PARAMETERS/Parameters/g;s/RETURNS/Return value/g' >>$reference
+fi
+done
+oldname="$currname"
+currname="$nextname"
+nextname=""
+echo "" >>$reference
+echo "" >>$reference
+echo "" >>$reference
+echo "" >>$reference
+echo "@node $currname, $nextname, $oldname, Reference" >>$reference
+echo "@findex $currname" >>$reference
+cat $currname.texi | sed 's/section/appendixsec/g;3d;s/@heading SYNOPSIS//g;s/DESCRIPTION/Description/;s/PARAMETERS/Parameters/g;s/RETURNS/Return value/g' >>$reference
+rm *.texi
+rm aalib.h

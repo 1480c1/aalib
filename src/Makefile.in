@@ -1,0 +1,513 @@
+# Makefile.in generated automatically by automake 1.3 from Makefile.am
+
+# Copyright (C) 1994, 1995, 1996, 1997, 1998 Free Software Foundation, Inc.
+# This Makefile.in is free software; the Free Software Foundation
+# gives unlimited permission to copy and/or distribute it,
+# with or without modifications, as long as this notice is preserved.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY, to the extent permitted by law; without
+# even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+# PARTICULAR PURPOSE.
+
+
+SHELL = /bin/sh
+
+srcdir = @srcdir@
+top_srcdir = @top_srcdir@
+VPATH = @srcdir@
+prefix = @prefix@
+exec_prefix = @exec_prefix@
+
+bindir = @bindir@
+sbindir = @sbindir@
+libexecdir = @libexecdir@
+datadir = @datadir@
+sysconfdir = @sysconfdir@
+sharedstatedir = @sharedstatedir@
+localstatedir = @localstatedir@
+libdir = @libdir@
+infodir = @infodir@
+mandir = @mandir@
+includedir = @includedir@
+oldincludedir = /usr/include
+
+DISTDIR =
+
+pkgdatadir = $(datadir)/@PACKAGE@
+pkglibdir = $(libdir)/@PACKAGE@
+pkgincludedir = $(includedir)/@PACKAGE@
+
+top_builddir = ..
+
+ACLOCAL = @ACLOCAL@
+AUTOCONF = @AUTOCONF@
+AUTOMAKE = @AUTOMAKE@
+AUTOHEADER = @AUTOHEADER@
+
+INSTALL = @INSTALL@
+INSTALL_PROGRAM = @INSTALL_PROGRAM@
+INSTALL_DATA = @INSTALL_DATA@
+INSTALL_SCRIPT = @INSTALL_SCRIPT@
+transform = @program_transform_name@
+
+NORMAL_INSTALL = :
+PRE_INSTALL = :
+POST_INSTALL = :
+NORMAL_UNINSTALL = :
+PRE_UNINSTALL = :
+POST_UNINSTALL = :
+host_alias = @host_alias@
+host_triplet = @host@
+CC = @CC@
+LD = @LD@
+LIBTOOL = @LIBTOOL@
+LN_S = @LN_S@
+MAKEINFO = @MAKEINFO@
+NM = @NM@
+PACKAGE = @PACKAGE@
+RANLIB = @RANLIB@
+VERSION = @VERSION@
+XCURSES = @XCURSES@
+machine = @machine@
+omitfp = @omitfp@
+profile = @profile@
+system = @system@
+
+AUTOMAKE_OPTIONS = foreign #include-deps
+EXTRA_DIST = config.dos config.os2 Makefile.dos Makefile.os2 aados.c aadoskbd.c aadosmou.c aaos2.c  aaos2kbd.c aaos2mou.c  aaint.h aamktabl.h aaxint.h toc.c
+lib_LTLIBRARIES=libaa.la
+libaa_la_SOURCES= \
+       aafont.c \
+       aafonts.c \
+       aavyhen.c \
+       aamktabl.c \
+       aamem.c \
+       aaprintf.c \
+       aahelp.c \
+       aaslnkbd.c \
+       aaslang.c \
+       aafastre.c \
+       aalinux.c \
+       aalinuxkbd.c \
+       aax.c \
+       aaxkbd.c \
+       aaxmouse.c \
+       fontgl.c \
+       font16.c \
+       font14.c \
+       fontx16.c \
+       fontx13.c \
+       fontx13b.c \
+       fontcour.c \
+       aarec.c \
+       font9.c \
+       font8.c \
+       fontline.c \
+       aacurses.c \
+       aacurkbd.c \
+       aacurmou.c \
+       aalib.c \
+       aaflush.c \
+       aarender.c \
+       aaout.c \
+       aain.c \
+       aaedit.c \
+       aaregist.c \
+       aakbdreg.c \
+       aagpm.c  \
+       aamoureg.c \
+       aasave.c \
+       aastdout.c \
+       aastdin.c \
+       aaparse.c \
+       aaimgwidth.c \
+       aaimgheight.c \
+       aascrwidth.c \
+       aascrheight.c \
+       aammwidth.c \
+       aammheight.c \
+       aaimage.c \
+       aatext.c \
+       aacurrfnt.c \
+       aaattrs.c \
+       aaputpixel.c \
+       aarecfunc.c 
+libaa_la_LDFLAGS=@LDFLAGS@ -version-info 1:4:0
+bin_PROGRAMS=aainfo aatest aafire aasavefont
+
+aainfo_LDADD= libaa.la
+aainfo_LDFLAGS= @LDFLAGS@
+aatest_LDADD= libaa.la
+aatest_LDFLAGS= @LDFLAGS@
+aafire_LDADD= libaa.la
+aafire_LDFLAGS= @LDFLAGS@
+aasavefont_LDADD= libaa.la
+aasavefont_LDFLAGS= @LDFLAGS@
+
+include_HEADERS=aalib.h
+mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
+CONFIG_HEADER = config.h
+CONFIG_CLEAN_FILES = 
+LTLIBRARIES =  $(lib_LTLIBRARIES)
+
+
+DEFS = @DEFS@ -I. -I$(srcdir) -I.
+CPPFLAGS = @CPPFLAGS@
+LDFLAGS = @LDFLAGS@
+LIBS = @LIBS@
+X_CFLAGS = @X_CFLAGS@
+X_LIBS = @X_LIBS@
+X_EXTRA_LIBS = @X_EXTRA_LIBS@
+X_PRE_LIBS = @X_PRE_LIBS@
+libaa_la_LIBADD = 
+libaa_la_OBJECTS =  aafont.lo aafonts.lo aavyhen.lo aamktabl.lo aamem.lo \
+aaprintf.lo aahelp.lo aaslnkbd.lo aaslang.lo aafastre.lo aalinux.lo \
+aalinuxkbd.lo aax.lo aaxkbd.lo aaxmouse.lo fontgl.lo font16.lo \
+font14.lo fontx16.lo fontx13.lo fontx13b.lo fontcour.lo aarec.lo \
+font9.lo font8.lo fontline.lo aacurses.lo aacurkbd.lo aacurmou.lo \
+aalib.lo aaflush.lo aarender.lo aaout.lo aain.lo aaedit.lo aaregist.lo \
+aakbdreg.lo aagpm.lo aamoureg.lo aasave.lo aastdout.lo aastdin.lo \
+aaparse.lo aaimgwidth.lo aaimgheight.lo aascrwidth.lo aascrheight.lo \
+aammwidth.lo aammheight.lo aaimage.lo aatext.lo aacurrfnt.lo aaattrs.lo \
+aaputpixel.lo aarecfunc.lo
+PROGRAMS =  $(bin_PROGRAMS)
+
+aainfo_SOURCES = aainfo.c
+aainfo_OBJECTS =  aainfo.o
+aainfo_DEPENDENCIES =  libaa.la
+aatest_SOURCES = aatest.c
+aatest_OBJECTS =  aatest.o
+aatest_DEPENDENCIES =  libaa.la
+aafire_SOURCES = aafire.c
+aafire_OBJECTS =  aafire.o
+aafire_DEPENDENCIES =  libaa.la
+aasavefont_SOURCES = aasavefont.c
+aasavefont_OBJECTS =  aasavefont.o
+aasavefont_DEPENDENCIES =  libaa.la
+CFLAGS = @CFLAGS@
+COMPILE = $(CC) $(DEFS) $(INCLUDES) $(CPPFLAGS) $(CFLAGS)
+LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(INCLUDES) $(CPPFLAGS) $(CFLAGS)
+LINK = $(LIBTOOL) --mode=link $(CC) $(CFLAGS) $(LDFLAGS) -o $@
+HEADERS =  $(include_HEADERS)
+
+DIST_COMMON =  Makefile.am Makefile.in config.h.in stamp-h.in
+
+
+DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
+
+TAR = tar
+GZIP = --best
+DEP_FILES =  .deps/aaattrs.P .deps/aacurkbd.P .deps/aacurmou.P \
+.deps/aacurrfnt.P .deps/aacurses.P .deps/aaedit.P .deps/aafastre.P \
+.deps/aafire.P .deps/aaflush.P .deps/aafont.P .deps/aafonts.P \
+.deps/aagpm.P .deps/aahelp.P .deps/aaimage.P .deps/aaimgheight.P \
+.deps/aaimgwidth.P .deps/aain.P .deps/aainfo.P .deps/aakbdreg.P \
+.deps/aalib.P .deps/aalinux.P .deps/aalinuxkbd.P .deps/aamem.P \
+.deps/aamktabl.P .deps/aammheight.P .deps/aammwidth.P .deps/aamoureg.P \
+.deps/aaout.P .deps/aaparse.P .deps/aaprintf.P .deps/aaputpixel.P \
+.deps/aarec.P .deps/aarecfunc.P .deps/aaregist.P .deps/aarender.P \
+.deps/aasave.P .deps/aasavefont.P .deps/aascrheight.P \
+.deps/aascrwidth.P .deps/aaslang.P .deps/aaslnkbd.P .deps/aastdin.P \
+.deps/aastdout.P .deps/aatest.P .deps/aatext.P .deps/aavyhen.P \
+.deps/aax.P .deps/aaxkbd.P .deps/aaxmouse.P .deps/font14.P \
+.deps/font16.P .deps/font8.P .deps/font9.P .deps/fontcour.P \
+.deps/fontgl.P .deps/fontline.P .deps/fontx13.P .deps/fontx13b.P \
+.deps/fontx16.P
+SOURCES = $(libaa_la_SOURCES) aainfo.c aatest.c aafire.c aasavefont.c
+OBJECTS = $(libaa_la_OBJECTS) aainfo.o aatest.o aafire.o aasavefont.o
+
+all: Makefile $(LTLIBRARIES) $(PROGRAMS) $(HEADERS) config.h
+
+.SUFFIXES:
+.SUFFIXES: .S .c .lo .o .s
+$(srcdir)/Makefile.in: Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4)
+	cd $(top_srcdir) && $(AUTOMAKE) --foreign src/Makefile
+
+Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status $(BUILT_SOURCES)
+	cd $(top_builddir) \
+	  && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= $(SHELL) ./config.status
+
+
+config.h: stamp-h
+	@:
+stamp-h: $(srcdir)/config.h.in $(top_builddir)/config.status
+	cd $(top_builddir) \
+	  && CONFIG_FILES= CONFIG_HEADERS=src/config.h \
+	     $(SHELL) ./config.status
+	@echo timestamp > stamp-h
+$(srcdir)/config.h.in: $(srcdir)/stamp-h.in
+$(srcdir)/stamp-h.in: $(top_srcdir)/configure.in $(ACLOCAL_M4) 
+	cd $(top_srcdir) && $(AUTOHEADER)
+	@echo timestamp > $(srcdir)/stamp-h.in
+
+mostlyclean-hdr:
+
+clean-hdr:
+
+distclean-hdr:
+	-rm -f config.h
+
+maintainer-clean-hdr:
+
+mostlyclean-libLTLIBRARIES:
+
+clean-libLTLIBRARIES:
+	-test -z "$(lib_LTLIBRARIES)" || rm -f $(lib_LTLIBRARIES)
+
+distclean-libLTLIBRARIES:
+
+maintainer-clean-libLTLIBRARIES:
+
+install-libLTLIBRARIES: $(lib_LTLIBRARIES)
+	@$(NORMAL_INSTALL)
+	$(mkinstalldirs) $(DESTDIR)$(libdir)
+	@list='$(lib_LTLIBRARIES)'; for p in $$list; do \
+	  if test -f $$p; then \
+	    echo "$(LIBTOOL)  --mode=install $(INSTALL_DATA) $$p $(DESTDIR)$(libdir)/$$p"; \
+	    $(LIBTOOL)  --mode=install $(INSTALL_DATA) $$p $(DESTDIR)$(libdir)/$$p; \
+	  else :; fi; \
+	done
+
+uninstall-libLTLIBRARIES:
+	@$(NORMAL_UNINSTALL)
+	list='$(lib_LTLIBRARIES)'; for p in $$list; do \
+	  $(LIBTOOL)  --mode=uninstall rm -f $(DESTDIR)$(libdir)/$$p; \
+	done
+
+.s.o:
+	$(COMPILE) -c $<
+
+.S.o:
+	$(COMPILE) -c $<
+
+mostlyclean-compile:
+	-rm -f *.o core *.core
+
+clean-compile:
+
+distclean-compile:
+	-rm -f *.tab.c
+
+maintainer-clean-compile:
+
+.s.lo:
+	$(LIBTOOL) --mode=compile $(COMPILE) -c $<
+
+.S.lo:
+	$(LIBTOOL) --mode=compile $(COMPILE) -c $<
+
+mostlyclean-libtool:
+	-rm -f *.lo
+
+clean-libtool:
+	-rm -rf .libs _libs
+
+distclean-libtool:
+
+maintainer-clean-libtool:
+
+libaa.la: $(libaa_la_OBJECTS) $(libaa_la_DEPENDENCIES)
+	$(LINK) -rpath $(libdir) $(libaa_la_LDFLAGS) $(libaa_la_OBJECTS) $(libaa_la_LIBADD) $(LIBS)
+
+mostlyclean-binPROGRAMS:
+
+clean-binPROGRAMS:
+	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
+
+distclean-binPROGRAMS:
+
+maintainer-clean-binPROGRAMS:
+
+install-binPROGRAMS: $(bin_PROGRAMS)
+	@$(NORMAL_INSTALL)
+	$(mkinstalldirs) $(DESTDIR)$(bindir)
+	@list='$(bin_PROGRAMS)'; for p in $$list; do \
+	  if test -f $$p; then \
+	    echo " $(LIBTOOL)  --mode=install $(INSTALL_PROGRAM) $$p $(DESTDIR)$(bindir)/`echo $$p|sed '$(transform)'`"; \
+	    $(LIBTOOL)  --mode=install $(INSTALL_PROGRAM) $$p $(DESTDIR)$(bindir)/`echo $$p|sed '$(transform)'`; \
+	  else :; fi; \
+	done
+
+uninstall-binPROGRAMS:
+	@$(NORMAL_UNINSTALL)
+	list='$(bin_PROGRAMS)'; for p in $$list; do \
+	  rm -f $(DESTDIR)$(bindir)/`echo $$p|sed '$(transform)'`; \
+	done
+
+aainfo: $(aainfo_OBJECTS) $(aainfo_DEPENDENCIES)
+	@rm -f aainfo
+	$(LINK) $(aainfo_LDFLAGS) $(aainfo_OBJECTS) $(aainfo_LDADD) $(LIBS)
+
+aatest: $(aatest_OBJECTS) $(aatest_DEPENDENCIES)
+	@rm -f aatest
+	$(LINK) $(aatest_LDFLAGS) $(aatest_OBJECTS) $(aatest_LDADD) $(LIBS)
+
+aafire: $(aafire_OBJECTS) $(aafire_DEPENDENCIES)
+	@rm -f aafire
+	$(LINK) $(aafire_LDFLAGS) $(aafire_OBJECTS) $(aafire_LDADD) $(LIBS)
+
+aasavefont: $(aasavefont_OBJECTS) $(aasavefont_DEPENDENCIES)
+	@rm -f aasavefont
+	$(LINK) $(aasavefont_LDFLAGS) $(aasavefont_OBJECTS) $(aasavefont_LDADD) $(LIBS)
+
+install-includeHEADERS: $(include_HEADERS)
+	@$(NORMAL_INSTALL)
+	$(mkinstalldirs) $(DESTDIR)$(includedir)
+	@list='$(include_HEADERS)'; for p in $$list; do \
+	  if test -f "$$p"; then d= ; else d="$(srcdir)/"; fi; \
+	  echo " $(INSTALL_DATA) $$d$$p $(DESTDIR)$(includedir)/$$p"; \
+	  $(INSTALL_DATA) $$d$$p $(DESTDIR)$(includedir)/$$p; \
+	done
+
+uninstall-includeHEADERS:
+	@$(NORMAL_UNINSTALL)
+	list='$(include_HEADERS)'; for p in $$list; do \
+	  rm -f $(DESTDIR)$(includedir)/$$p; \
+	done
+
+tags: TAGS
+
+ID: $(HEADERS) $(SOURCES) $(LISP)
+	here=`pwd` && cd $(srcdir) \
+	  && mkid -f$$here/ID $(SOURCES) $(HEADERS) $(LISP)
+
+TAGS:  $(HEADERS) $(SOURCES) config.h.in $(TAGS_DEPENDENCIES) $(LISP)
+	tags=; \
+	here=`pwd`; \
+	list='$(SOURCES) $(HEADERS)'; \
+	unique=`for i in $$list; do echo $$i; done | \
+	  awk '    { files[$$0] = 1; } \
+	       END { for (i in files) print i; }'`; \
+	test -z "$(ETAGS_ARGS)config.h.in$$unique$(LISP)$$tags" \
+	  || (cd $(srcdir) && etags $(ETAGS_ARGS) $$tags config.h.in $$unique $(LISP) -o $$here/TAGS)
+
+mostlyclean-tags:
+
+clean-tags:
+
+distclean-tags:
+	-rm -f TAGS ID
+
+maintainer-clean-tags:
+
+distdir = $(top_builddir)/$(PACKAGE)-$(VERSION)/$(subdir)
+
+subdir = src
+
+distdir: $(DISTFILES)
+	here=`cd $(top_builddir) && pwd`; \
+	top_distdir=`cd $(top_distdir) && pwd`; \
+	distdir=`cd $(distdir) && pwd`; \
+	cd $(top_srcdir) \
+	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --foreign src/Makefile
+	@for file in $(DISTFILES); do \
+	  d=$(srcdir); \
+	  test -f $(distdir)/$$file \
+	  || ln $$d/$$file $(distdir)/$$file 2> /dev/null \
+	  || cp -p $$d/$$file $(distdir)/$$file; \
+	done
+
+DEPS_MAGIC := $(shell mkdir .deps > /dev/null 2>&1 || :)
+
+-include $(DEP_FILES)
+
+mostlyclean-depend:
+
+clean-depend:
+
+distclean-depend:
+
+maintainer-clean-depend:
+	-rm -rf .deps
+
+%.o: %.c
+	@echo '$(COMPILE) -c $<'; \
+	$(COMPILE) -Wp,-MD,.deps/$(*F).P -c $<
+
+%.lo: %.c
+	@echo '$(LTCOMPILE) -c $<'; \
+	$(LTCOMPILE) -Wp,-MD,.deps/$(*F).p -c $<
+	@-sed -e 's/^\([^:]*\)\.o:/\1.lo \1.o:/' \
+	  < .deps/$(*F).p > .deps/$(*F).P
+	@-rm -f .deps/$(*F).p
+info:
+dvi:
+check: all
+	$(MAKE)
+installcheck:
+install-exec: install-libLTLIBRARIES install-binPROGRAMS
+	@$(NORMAL_INSTALL)
+
+install-data: install-includeHEADERS
+	@$(NORMAL_INSTALL)
+
+install: install-exec install-data all
+	@:
+
+uninstall: uninstall-libLTLIBRARIES uninstall-binPROGRAMS uninstall-includeHEADERS
+
+install-strip:
+	$(MAKE) INSTALL_PROGRAM='$(INSTALL_PROGRAM) -s' INSTALL_SCRIPT='$(INSTALL_PROGRAM)' install
+installdirs:
+	$(mkinstalldirs)  $(DATADIR)$(libdir) $(DATADIR)$(bindir) \
+		$(DATADIR)$(includedir)
+
+
+mostlyclean-generic:
+	-test -z "$(MOSTLYCLEANFILES)" || rm -f $(MOSTLYCLEANFILES)
+
+clean-generic:
+	-test -z "$(CLEANFILES)" || rm -f $(CLEANFILES)
+
+distclean-generic:
+	-rm -f Makefile $(DISTCLEANFILES)
+	-rm -f config.cache config.log stamp-h stamp-h[0-9]*
+	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
+
+maintainer-clean-generic:
+	-test -z "$(MAINTAINERCLEANFILES)" || rm -f $(MAINTAINERCLEANFILES)
+	-test -z "$(BUILT_SOURCES)" || rm -f $(BUILT_SOURCES)
+mostlyclean:  mostlyclean-hdr mostlyclean-libLTLIBRARIES \
+		mostlyclean-compile mostlyclean-libtool \
+		mostlyclean-binPROGRAMS mostlyclean-tags \
+		mostlyclean-depend mostlyclean-generic
+
+clean:  clean-hdr clean-libLTLIBRARIES clean-compile clean-libtool \
+		clean-binPROGRAMS clean-tags clean-depend clean-generic \
+		mostlyclean
+
+distclean:  distclean-hdr distclean-libLTLIBRARIES distclean-compile \
+		distclean-libtool distclean-binPROGRAMS distclean-tags \
+		distclean-depend distclean-generic clean
+	-rm -f config.status
+	-rm -f libtool
+
+maintainer-clean:  maintainer-clean-hdr maintainer-clean-libLTLIBRARIES \
+		maintainer-clean-compile maintainer-clean-libtool \
+		maintainer-clean-binPROGRAMS maintainer-clean-tags \
+		maintainer-clean-depend maintainer-clean-generic \
+		distclean
+	@echo "This command is intended for maintainers to use;"
+	@echo "it deletes files that may require special tools to rebuild."
+
+.PHONY: mostlyclean-hdr distclean-hdr clean-hdr maintainer-clean-hdr \
+mostlyclean-libLTLIBRARIES distclean-libLTLIBRARIES \
+clean-libLTLIBRARIES maintainer-clean-libLTLIBRARIES \
+uninstall-libLTLIBRARIES install-libLTLIBRARIES mostlyclean-compile \
+distclean-compile clean-compile maintainer-clean-compile \
+mostlyclean-libtool distclean-libtool clean-libtool \
+maintainer-clean-libtool mostlyclean-binPROGRAMS distclean-binPROGRAMS \
+clean-binPROGRAMS maintainer-clean-binPROGRAMS uninstall-binPROGRAMS \
+install-binPROGRAMS uninstall-includeHEADERS install-includeHEADERS \
+tags mostlyclean-tags distclean-tags clean-tags maintainer-clean-tags \
+distdir mostlyclean-depend distclean-depend clean-depend \
+maintainer-clean-depend info dvi installcheck install-exec install-data \
+install uninstall all installdirs mostlyclean-generic distclean-generic \
+clean-generic maintainer-clean-generic clean mostlyclean distclean \
+maintainer-clean
+
+
+# Tell versions [3.59,3.63) of GNU make to not export all variables.
+# Otherwise a system limit (for SysV at least) may be exceeded.
+.NOEXPORT:
