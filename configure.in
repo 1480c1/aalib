@@ -1,6 +1,6 @@
 include(aclocal.m4)
 AC_INIT(src/aalib.c)
-AM_INIT_AUTOMAKE(aalib,1.3)
+AM_INIT_AUTOMAKE(aalib,1.4)
 
 AM_CONFIG_HEADER(src/config.h)
 
