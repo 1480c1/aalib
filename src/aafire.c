@@ -58,6 +58,7 @@ initialize (void)
       printf ("Failed to initialize aalib\n");
       exit (1);
     }
+  aa_autoinitkbd(context, 0);
   params = aa_getrenderparams ();
   bitmap = aa_image (context);
   for (i = 0; i < 256; i++)
@@ -143,7 +144,7 @@ static void
 game (void)
 {
   gentable ();
-  while (1)
+  while (aa_getevent(context, 0) == AA_NONE) {
     {
       drawfire ();
     }
