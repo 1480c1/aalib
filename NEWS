@@ -8,6 +8,7 @@ Noteworthly changes in aalib-1.3 are:
   - Configure no longer attempts to guess optimization switches.
   - c2man generated manual pages added
   - X driver now allows setting font using AAFont environment variable
+  - Added SDL/GTK+ like configuration scheme
 
 Noteworthly changes in aalib-1.1 are: 
 

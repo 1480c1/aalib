@@ -338,7 +338,7 @@ __AA_CONST struct aa_driver save_d;
 
 __AA_CONST static char **build_conversions(__AA_CONST char * __AA_CONST *in, __AA_CONST char **conv)
 {
-    char c;
+    unsigned char c;
 
     memset(conv, 0, sizeof(char *) * 256);
 

@@ -69,7 +69,8 @@ static void slang_uninit(aa_context * c)
 }
 static int slang_getchar(aa_context * c1, int wait)
 {
-    int c, flag = 0;
+    int c;
+    volatile int flag = 0;
 #ifdef GPM_MOUSEDRIVER
     static Gpm_Event ev;
 #endif

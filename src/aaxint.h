@@ -12,6 +12,7 @@ struct xdriverdata {
   Colormap cmap;
   int screen;
   long bold, normal, dim, black, special;
+  long invertedbold, invertednormal, inverteddim, invertedblack, invertedspecial;
   int width;
   int height;
   XFontStruct *font_s;
@@ -22,6 +23,7 @@ struct xdriverdata {
   unsigned char *previoust, *previousa;
   int font;
   int pixelwidth, pixelheight;
+  int inverted;
 };
 
 int __aa_X_getsize(struct aa_context *c,struct xdriverdata *d);

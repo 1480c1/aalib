@@ -5,6 +5,7 @@
 #include "config.h"
 #ifdef X11_DRIVER
 #include <X11/Xlib.h>
+#include <X11/Xutil.h>
 #include "aalib.h"
 #include "aaint.h"
 #include "aaxint.h"
@@ -41,13 +42,107 @@ mygetpixel (XImage * image, int pos, int y)
     font_error = -(end - start - sum);
   return 1;
 }
+static void
+X_AllocColors (struct xdriverdata * d)
+{
+  static XColor c;
+  d->black = d->attr.border_pixel = d->attr.background_pixel = d->invertedbold =
+    BlackPixel (d->dp, d->screen);
+  d->bold = d->invertedblack = WhitePixel (d->dp, d->screen);
+
+  c.red = C1 * 256;
+  c.green = C1 * 256;
+  c.blue = C1 * 256;
+  if (!XAllocColor (d->dp, d->cmap, &c))
+     d->normal = d->bold;
+  else
+     d->normal = c.pixel;
+  c.red = 65536 - c.red;
+  c.green = 65536 - c.green;
+  c.blue = 65536 - c.blue;
+  if (!XAllocColor (d->dp, d->cmap, &c))
+     d->invertednormal = d->invertedbold, d->normal = d->bold;
+  else
+     d->invertednormal = c.pixel;
+
+  c.red = C2 * 256;
+  c.green = C2 * 256;
+  c.blue = C2 * 256;
+  if (d->bold == d->dim && !XAllocColor (d->dp, d->cmap, &c))
+     d->dim = d->normal;
+  else
+     d->dim = c.pixel;
+  c.red = 65536 - c.red;
+  c.green = 65536 - c.green;
+  c.blue = 65536 - c.blue;
+  if (!XAllocColor (d->dp, d->cmap, &c))
+     d->inverteddim = d->invertednormal, d->dim = d->normal;
+  else
+     d->inverteddim = c.pixel;
+
+  c.red = 0;
+  c.green = 0;
+  c.blue = 65535UL;
+  if (!XAllocColor (d->dp, d->cmap, &c))
+     d->special = d->black;
+  else
+     d->special = c.pixel;
+  c.red = 65535UL/2;
+  c.green = 65535UL/2;
+  c.blue = 65535UL;
+  if (!XAllocColor (d->dp, d->cmap, &c))
+     d->invertedspecial = d->invertedblack;
+  else
+     d->invertedspecial = c.pixel;
+}
+static void
+X_setinversionmode (int inverted, struct xdriverdata *d)
+{
+  d->inverted = inverted;
+  if (d->specialGC)
+    XFreeGC (d->dp, d->specialGC);
+  if (d->normalGC)
+    XFreeGC (d->dp, d->normalGC);
+  if (d->boldGC)
+    XFreeGC (d->dp, d->boldGC);
+  if (d->dimGC)
+    XFreeGC (d->dp, d->dimGC);
+  d->specialGC = XCreateGC (d->dp, d->wi, 0L, NULL);
+  XSetForeground (d->dp, d->specialGC, inverted ? d->invertedspecial : d->special);
+  XSetFont (d->dp, d->specialGC, d->font);
+  d->normalGC = XCreateGC (d->dp, d->wi, 0L, NULL);
+  XSetForeground (d->dp, d->normalGC, inverted ? d->invertednormal : d->normal);
+  XSetBackground(d->dp, d->normalGC, inverted ? d->invertedblack : d->black);
+  XSetFont (d->dp, d->normalGC, d->font);
+  d->boldGC = XCreateGC (d->dp, d->wi, 0L, NULL);
+  XSetForeground (d->dp, d->boldGC, inverted ? d->invertedbold : d->bold);
+  XSetBackground(d->dp, d->boldGC, inverted ? d->invertedblack : d->black);
+  XSetFont (d->dp, d->boldGC, d->font);
+  d->dimGC = XCreateGC (d->dp, d->wi, 0L, NULL);
+  XSetForeground (d->dp, d->dimGC, inverted ? d->inverteddim : d->dim);
+  XSetBackground(d->dp, d->dimGC, inverted ? d->invertedblack : d->black);
+  XSetFont (d->dp, d->dimGC, d->font);
+  d->blackGC = XCreateGC (d->dp, d->wi, 0L, NULL);
+  XSetForeground (d->dp, d->blackGC, inverted ? d->invertedblack : d->black);
+  XSetBackground(d->dp, d->blackGC, inverted ? d->invertedblack : d->black);
+  d->currGC = d->normalGC;
+
+  if (!d->pixmapmode)
+    XSetWindowBackground (d->dp, d->wi, inverted ? d->invertedblack : d->black);
+  else
+    XFillRectangle(d->dp, d->pi, d->blackGC, 0, 0, d->pixelwidth, d->pixelheight);
+  XClearWindow (d->dp, d->wi);
+  if (d->previoust != NULL)
+      free(d->previoust), free(d->previousa);
+  d->previoust=NULL;
+  d->previousa=NULL;
+}
 
 static int X_init(__AA_CONST struct aa_hardware_params *p, __AA_CONST void *none,struct aa_hardware_params *dest, void **driverdata)
 {
     const char *font = "8x13bold";
     static int registered;
     static aa_font aafont;
-    static XColor c;
     __AA_CONST static struct aa_hardware_params def=
     {&aa_fontX13B, AA_DIM_MASK | AA_REVERSE_MASK | AA_NORMAL_MASK | AA_BOLD_MASK | AA_BOLDFONT_MASK | AA_EXTENDED,
      0, 0,
@@ -62,9 +157,6 @@ static int X_init(__AA_CONST struct aa_hardware_params *p, __AA_CONST void *none
     d->cvisible=1;
     d->width=80;
     d->height=32;
-    c.red = C1 * 256;
-    c.green = C1 * 256;
-    c.blue = C1 * 256;
     if ((d->dp = XOpenDisplay(NULL)) == NULL)
 	return 0;
     d->screen = DefaultScreen(d->dp);
@@ -84,33 +176,14 @@ static int X_init(__AA_CONST struct aa_hardware_params *p, __AA_CONST void *none
     d->fontwidth = d->font_s->max_bounds.rbearing - d->font_s->min_bounds.lbearing;
     d->realfontwidth = d->font_s->max_bounds.width;
     d->cmap = DefaultColormap(d->dp, d->screen);
-    d->black = d->attr.border_pixel = d->attr.background_pixel = BlackPixel(d->dp, d->screen);
-    d->bold = WhitePixel(d->dp, d->screen);
-    d->normal = XAllocColor(d->dp, d->cmap, &c);
     /*c.flags=DoRed | DoGreen | DoBlue; */
-    c.red = C2 * 256;
-    c.green = C2 * 256;
-    c.blue = C2 * 256;
-    if (!d->normal) {
-	d->normal = d->bold;
-	dest->supported &= ~AA_BOLD_MASK;
-	dest->supported &= ~AA_DIM_MASK;
-    }
-    d->normal = c.pixel;
-    d->dim = XAllocColor(d->dp, d->cmap, &c);
-    if (!d->dim) {
-	d->dim = d->bold;
-	dest->supported &= ~AA_DIM_MASK;
-    }
-    d->dim = c.pixel;
-    c.red = 0;
-    c.green = 0;
-    c.blue = 65535UL;
-    d->special = XAllocColor(d->dp, d->cmap, &c);
-    if (!d->special) {
-	d->special = d->black;
-    }
-    d->special = c.pixel;
+
+    X_AllocColors (d);
+    if (d->bold == d->normal)
+      dest->supported &= ~AA_BOLD_MASK;
+    if (d->dim == d->normal)
+      dest->supported &= ~AA_DIM_MASK;
+
     d->attr.event_mask = ExposureMask;
     d->attr.override_redirect = False;
     if (p->width)
@@ -126,7 +199,6 @@ static int X_init(__AA_CONST struct aa_hardware_params *p, __AA_CONST void *none
     if (p->minheight && d->height < p->minheight)
 	d->height = p->minheight;
     d->wi = XCreateWindow(d->dp, RootWindow(d->dp, d->screen), 0, 0, d->width * d->realfontwidth, d->height * d->fontheight, 0, DefaultDepth(d->dp, d->screen), InputOutput, DefaultVisual(d->dp, d->screen), CWBackPixel | CWBorderPixel | CWEventMask, &d->attr);
-    XSetWindowBackground(d->dp, d->wi, d->black);
     if (!registered) {
 	d->pi = XCreatePixmap(d->dp, d->wi, d->fontwidth, d->fontheight * 256, 1);
 	if (d->pi) {
@@ -175,21 +247,7 @@ static int X_init(__AA_CONST struct aa_hardware_params *p, __AA_CONST void *none
     }
     XStoreName(d->dp, d->wi, "aa for X");
     XMapWindow(d->dp, d->wi);
-    d->specialGC = XCreateGC(d->dp, d->wi, 0L, NULL);
-    XSetForeground(d->dp, d->specialGC, d->special);
-    XSetFont(d->dp, d->specialGC, d->font);
-    d->normalGC = XCreateGC(d->dp, d->wi, 0L, NULL);
-    XSetForeground(d->dp, d->normalGC, d->normal);
-    XSetFont(d->dp, d->normalGC, d->font);
-    d->boldGC = XCreateGC(d->dp, d->wi, 0L, NULL);
-    XSetForeground(d->dp, d->boldGC, d->bold);
-    XSetFont(d->dp, d->boldGC, d->font);
-    d->dimGC = XCreateGC(d->dp, d->wi, 0L, NULL);
-    XSetForeground(d->dp, d->dimGC, d->dim);
-    XSetFont(d->dp, d->dimGC, d->font);
-    d->blackGC = XCreateGC(d->dp, d->wi, 0L, NULL);
-    XSetForeground(d->dp, d->blackGC, d->black);
-    d->currGC = d->normalGC;
+    X_setinversionmode (getenv ("AAInverted") != NULL, d);
     d->pixelwidth = -1;
     d->pixelheight = -1;
     XSync(d->dp, 0);
@@ -217,7 +275,7 @@ int __aa_X_getsize(struct aa_context *c,struct xdriverdata *d)
 	  d->pi = BadAlloc;
 	if (d->pi == BadAlloc) {
 	    d->pixmapmode = 0;
-	    XSetWindowBackground(d->dp, d->wi, d->black);
+	    XSetWindowBackground(d->dp, d->wi, d->inverted ? d->invertedblack : d->black);
 	} else {
 	    d->pixmapmode = 1;
 	    XFillRectangle(d->dp, d->pi, d->blackGC, 0, 0, d->pixelwidth, d->pixelheight);
@@ -495,7 +553,7 @@ static void X_cursor(aa_context * c, int mode)
 
 __AA_CONST struct aa_driver X11_d =
 {
-    "X11", "X11 driver 1.0",
+    "X11", "X11 driver 1.1",
     X_init,
     X_uninit,
     X_getsize,

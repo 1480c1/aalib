@@ -59,6 +59,9 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 host_alias = @host_alias@
 host_triplet = @host@
+AALIB_CFLAGS = @AALIB_CFLAGS@
+AALIB_LIBS = @AALIB_LIBS@
+AALIB_RLD_FLAGS = @AALIB_RLD_FLAGS@
 AS = @AS@
 CC = @CC@
 DLLTOOL = @DLLTOOL@
@@ -71,8 +74,6 @@ RANLIB = @RANLIB@
 VERSION = @VERSION@
 XCURSES = @XCURSES@
 machine = @machine@
-omitfp = @omitfp@
-profile = @profile@
 system = @system@
 
 info_TEXINFOS = aalib.texinfo
@@ -235,7 +236,7 @@ distdir: $(DISTFILES)
 	@for file in $(DISTFILES); do \
 	  d=$(srcdir); \
 	  if test -d $$d/$$file; then \
-	    cp -pr $$d/$$file $(distdir)/$$file; \
+	    cp -pr $$/$$file $(distdir)/$$file; \
 	  else \
 	    test -f $(distdir)/$$file \
 	    || ln $$d/$$file $(distdir)/$$file 2> /dev/null \

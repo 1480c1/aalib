@@ -1,9 +1,22 @@
 include(aclocal.m4)
 AC_INIT(src/aalib.c)
-AM_INIT_AUTOMAKE(aalib,1.4)
+AM_INIT_AUTOMAKE(aalib,1.4.0)
+AC_CANONICAL_HOST
+AC_CANONICAL_TARGET
 
 AM_CONFIG_HEADER(src/config.h)
 
+dnl Initialize the compiler and linker flags for AALIB applications
+
+AALIB_CFLAGS=""
+AALIB_LIBS="-laa"
+
+dnl Output the video drivers we use
+if test x$enable_video = xtrue; then
+    if test "$VIDEO_SUBDIRS" = ""; then
+        AC_MSG_ERROR(*** No video drivers are enabled!)
+    fi
+fi
 
 dnl Checks for programs.
 
@@ -33,6 +46,10 @@ AC_CHECK_PROG(machine,uname,`uname --machine`,unknown)
 fi
 AC_HEADER_STDC
 AC_CHECK_LIB(m, pow)
+
+if test "x$ac_cv_lib_m_pow" = xyes; then 
+  AALIB_LIBS="$AALIB_LIBS -lm"
+fi
 
 cc_uses_g=yes
 if test x$GCC = xyes; then
@@ -75,6 +92,7 @@ AC_ARG_WITH(gpm-mouse,
                 AC_DEFINE(GPM_MOUSEDRIVER)
 	        gpm_mousedriver=true
 		CFLAGS="$CFLAGS -I$withval/include"
+	        AALIB_LIBS="$AALIB_LIBS -L$withval/lib -lgpm"
 		AC_MSG_RESULT(defining use_gpm)
 	fi
 )
@@ -86,6 +104,7 @@ if test "x$no_x" = x; then
     x_driver=true
     AC_DEFINE(X11_DRIVER)
     LIBS="$LIBS $X_EXTRA_LIBS $X_LIBS -lX11"
+    AALIB_LIBS="$AALIB_LIBS $X_EXTRA_LIBS $X_LIBS -lX11"
     CFLAGS="$CFLAGS $X_CFLAGS"
 fi
 
@@ -94,6 +113,7 @@ if test  "$gpm_mousedriver_test" = yes; then
   AC_CHECK_LIB(gpm, Gpm_Repeat,[
           AC_DEFINE(GPM_MOUSEDRIVER)
 	  gpm_mousedriver=true
+	  AALIB_LIBS="$AALIB_LIBS -lgpm"
           LIBS="$LIBS -lgpm"])
 fi
 
@@ -129,6 +149,7 @@ AC_DEFUN(AC_USE_OSF1_CURSES, [
        AC_DEFINE(USE_SYSV_CURSES)
        XCURSES="xcurses.o"
        LIBS="$LIBS -lcurses"
+       AALIB_LIBS="$AALIB_LIBS -lcurses"
 ])
 
 AC_DEFUN(AC_USE_SYSV_CURSES, [
@@ -139,10 +160,10 @@ AC_DEFUN(AC_USE_SYSV_CURSES, [
 	search_ncurses=false
 	screen_manager="SysV/curses"
 	LIBS="$LIBS -lcurses"
+        AALIB_LIBS="$AALIB_LIBS -lcurses"
 ])
 
 XCURSES=""
-AC_SUBST(XCURSES)
 
 
 
@@ -177,6 +198,7 @@ AC_ARG_WITH(ncurses,
 		search_ncurses=true
 	else
 		LIBS="$LIBS -L$withval/lib -lncurses"
+		AALIB_LIBS="$AALIB_LIBS -L$withval/lib -lncurses"
 		CFLAGS="$CFLAGS -I$withval/include"
 		search_ncurses=false
                 curses_driver=true
@@ -196,6 +218,7 @@ if test  "$slang_driver_test" = yes; then
             AC_CHECK_LIB(slang, SLsmg_init_smg)
             if test "x$ac_cv_lib_slang_SLsmg_init_smg" = xyes; then 
 	      AC_MSG_RESULT(Found slang on $1/$2)
+	      AALIB_LIBS="$AALIB_LIBS $3 -lslang"
  	      LIBS="$LIBS $3"
 	      CFLAGS="$CFLAGS $4"
               slang_driver=true
@@ -233,6 +256,7 @@ AC_DEFUN(AC_NCURSES, [
             AC_CHECK_LIB(ncurses, initscr)
             if test "x$ac_cv_lib_ncurses_initscr" = xyes; then 
 	      AC_MSG_RESULT(Found ncurses on $1/$2)
+	      AALIB_LIBS="$AALIB_LIBS $3 -lncurses"
  	      LIBS="$LIBS $3"
 	      CFLAGS="$CFLAGS $4"
 	      search_ncurses=false
@@ -263,6 +287,7 @@ AC_DEFUN(AC_CURSES, [
 	      CFLAGS="$CFLAGS $4"
 	      search_ncurses=false
               curses_driver=true
+	      AALIB_LIBS="$AALIB_LIBS $3 -lcurses"
 	      AC_DEFINE(CURSES_DRIVER)
 	      screen_manager=$5
 	      AC_DEFINE(USE_CURSES)
@@ -328,13 +353,50 @@ AC_PROG_GCC_TRADITIONAL
 AC_TYPE_SIGNAL
 AC_CHECK_FUNCS(strdup)
 
+case "$target" in
+    *-*-linux*)
+        ARCH=linux
+	;;
+    *-*-bsdi*)
+        ARCH=bsdi
+	;;
+    *-*-freebsd*)
+        ARCH=freebsd
+	;;
+    *-*-solaris*)
+        ARCH=solaris
+	;;
+    *)
+        ARCH=other
+	;;
+esac
 
-AC_SUBST(profile)
-AC_SUBST(omitfp)
+# Set runtime shared library paths as needed
+
+if test $ARCH = linux -o $ARCH = freebsd -o $ARCH = bsdi; then
+  AALIB_RLD_FLAGS="-Wl,-rpath,\${exec_prefix}/lib"
+fi
+
+if test $ARCH = solaris; then
+  AALIB_RLD_FLAGS="-R\${exec_prefix}/lib"
+fi
+
+
+dnl Expand the cflags and libraries needed by apps using AALIB
+AC_SUBST(AALIB_CFLAGS)
+AC_SUBST(AALIB_LIBS)
+AC_SUBST(AALIB_RLD_FLAGS)
+AC_SUBST(XCURSES)
+
+# Set conditional variables for shared and static library selection.
+# These are not used in any Makefile.am but in sdl-config.in.
+AM_CONDITIONAL([ENABLE_SHARED], [test "$enable_shared" = yes])
+AM_CONDITIONAL([ENABLE_STATIC], [test "$enable_static" = yes])
 
 echo "-----------------------------------------------------"
 echo "CFLAGS  $CFLAGS"
-echo "LDFLAGS $LDFLAGS"
+echo "LDFLAGS $LIBS"
+echo "AA-LIBD $AALIB_LIBS"
 echo "CC      $CC"
 echo "-----------------------------------------------------"
 echo "Display drivers:"
@@ -405,4 +467,5 @@ fi
 echo "-----------------------------------------------------"
 
 
-AC_OUTPUT(Makefile man/Makefile doc/Makefile src/Makefile)
+AC_OUTPUT([Makefile man/Makefile doc/Makefile src/Makefile aalib-config],
+	  [chmod +x aalib-config])
