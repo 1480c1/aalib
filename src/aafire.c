@@ -159,7 +159,7 @@ main (int argc, char **argv)
       exit (1);
     }
   initialize ();
-  aa_resizehandler(context, (void *)aa_resize); // resize handler added by JEH
+  aa_resizehandler(context, (void *)aa_resize); 
   game ();
   uninitialize ();
   return 1;
