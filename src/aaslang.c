@@ -24,7 +24,7 @@ static int slang_init(__AA_CONST struct aa_hardware_params *p,__AA_CONST  void *
 	__slang_is_up = 1;
 	uninitslang = 1;
     }
-    if (!SLsmg_init_smg())
+    if (SLsmg_init_smg() != 0)
 	return 0;
     if (SLtt_Use_Ansi_Colors) {
 	dest->supported &= ~AA_BOLDFONT_MASK;
@@ -46,7 +46,7 @@ static void slang_getsize(aa_context * c, int *width, int *height)
 {
     SLtt_get_screen_size();
     SLsmg_reset_smg();
-    if (!SLsmg_init_smg())
+    if (SLsmg_init_smg() != 0)
 	printf("Internal error!\n");
     SLtt_set_mono(AA_NORMAL, "normal", 0);
     SLtt_set_mono(AA_BOLD, "bold", SLTT_BOLD_MASK);

@@ -47,8 +47,8 @@ support color graphics. So we decided to convert the penguin image to
 ascii art using netpbm tools.
 
    The output was very ugly because the converting algorithm was
-absolutly stupid.  During the night I designed a new convertor that
-used a font bitmap to creat an aproximation table. The output wasn't
+absolutely stupid.  During the night I designed a new convertor that
+used a font bitmap to creat an approximation table. The output wasn't
 very good since the algorithm wasn't tuned so well. Many months this
 small piece of code was waiting on my disc for the day "D". Meanwhile I
 started a new project XaoS (a fractal zoomer) with my friend Thomas.
@@ -77,7 +77,7 @@ AA-Project
   3. Force IBM to start manufacturing MDA cards again.
 
    AA-project was started by Jan Hubicka. In that times just a few
-people knew about it. Then a new demo named BB has been relased to show
+people knew about it. Then a new demo named BB has been released to show
 the power of AA-lib technology. Now the project is freely available and
 anyone can help.
 

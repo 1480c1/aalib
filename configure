@@ -1908,7 +1908,7 @@ if test "${with_slang_driver+set}" = set; then
   withval="$with_slang_driver"
   
 	if test x$withval = xno; then
-	  vga_driver_test=no
+	  slang_driver_test=no
 	fi
 
 fi
@@ -3019,7 +3019,7 @@ fi
             if test "x$ac_cv_lib_slang_SLsmg_init_smg" = xyes; then 
 	      echo "$ac_t""Found slang on /usr/include/slang.h" 1>&6
  	      LIBS="$LIBS "
-	      CFLAGS="$CFLAGS -I/usr/include/slang "
+	      CFLAGS="$CFLAGS -I/usr/include "
               slang_driver=true
 	      search_slang=false
 	      cat >> confdefs.h <<\EOF

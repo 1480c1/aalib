@@ -99,9 +99,10 @@ static int slang_getchar(aa_context * c1, int wait)
 	    tv.tv_sec = 0;
 	    tv.tv_usec = 0;
 	    FD_ZERO(&readfds);
-	    FD_SET(gpm_fd, &readfds);
+	    if (gpm_fd != -2)
+	        FD_SET(gpm_fd, &readfds);
 	    FD_SET(STDIN_FILENO, &readfds);
-	    if (!(flag = select(gpm_fd + 1, &readfds, NULL, NULL, &tv)))
+	    if (!(flag = select( ((gpm_fd == -2)?STDIN_FILENO:gpm_fd) + 1, &readfds, NULL, NULL, &tv)))
 		return AA_NONE;
 	}
 #endif
@@ -111,16 +112,17 @@ static int slang_getchar(aa_context * c1, int wait)
 	GPM_DRAWPOINTER(&ev);
 	while (!flag) {
 	    FD_ZERO(&readfds);
-	    FD_SET(gpm_fd, &readfds);
+	    if (gpm_fd != -2)
+	        FD_SET(gpm_fd, &readfds);
 	    FD_SET(STDIN_FILENO, &readfds);
 	    tv.tv_sec = 60;
-	    flag = select(gpm_fd + 1, &readfds, NULL, NULL, &tv);
+	    flag = select( ((gpm_fd == -2)?STDIN_FILENO:gpm_fd) + 1, &readfds, NULL, NULL, &tv);
 	}
 	if (flag == -1) {
 	    printf("error!\n");
 	    return (AA_NONE);
 	}
-	if (FD_ISSET(gpm_fd, &readfds)) {
+	if ((gpm_fd > -1) && (FD_ISSET(gpm_fd, &readfds))) {
 	    if (Gpm_GetEvent(&ev) && gpm_handler
 		&& ((*gpm_handler) (&ev, gpm_data))) {
 		gpm_hflag = 1;
@@ -128,8 +130,11 @@ static int slang_getchar(aa_context * c1, int wait)
 	    }
 	}
     }
+    if (gpm_fd == -2)
+        c = Gpm_Getchar();
+    else
 #endif
-    c = SLkp_getkey();
+        c = SLkp_getkey();
     iswaiting = 0;
 
     if (__resized_slang == 2) {

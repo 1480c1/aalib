@@ -26,7 +26,7 @@ static int gpm_init(struct aa_context *context, int mode)
     conn.defaultMask = 0;
     conn.maxMod = ~0;
     conn.minMod = 0;
-    if (Gpm_Open(&conn, 0) < 0)
+    if (Gpm_Open(&conn, 0) == -1)
 	return 0;
     if (gpm_fd < 0)
 	return 0;

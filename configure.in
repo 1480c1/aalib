@@ -53,7 +53,7 @@ AC_ARG_WITH(x11-driver,
 AC_ARG_WITH(slang-driver,
         [  --with-slang-driver=no   Used to disable slang driver],[
 	if test x$withval = xno; then
-	  vga_driver_test=no
+	  slang_driver_test=no
 	fi
 ])
 AC_ARG_WITH(curses-driver,
@@ -208,7 +208,7 @@ if test  "$slang_driver_test" = yes; then
 	fi
      fi
   ])
-  AC_SLANG(/usr/include, slang.h, , -I/usr/include/slang , "slang on /usr/include")
+  AC_SLANG(/usr/include, slang.h, , -I/usr/include , "slang on /usr/include")
   AC_SLANG(/usr/include/slang, slang.h, , -I/usr/include/slang , "slang on /usr/include/slang")
   AC_SLANG(/usr/local/include, slang.h, , -I/usr/local/include/slang , "slang on /usr/local/include")
   AC_SLANG(/usr/local/include/slang, slang.h, , -I/usr/local/include/slang , "slang on /usr/local/include/slang")
