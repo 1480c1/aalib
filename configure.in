@@ -20,11 +20,9 @@ gpm_mousedriver_test=yes
 x_mousedriver_test=yes
 
 use_cc_g_flag=no
-CCOPTS="$CFLAGS"
 AC_PROG_CC
 AM_PROG_LIBTOOL
 AC_PROG_MAKE_SET
-CFLAGS="$CCOPTS"
 AC_PROG_INSTALL
 
 dnl detect OS
@@ -44,39 +42,6 @@ if test x$GCC = xyes; then
 	cc_uses_g=no
     fi
 fi
-if test "x$CCOPTS" = x; then
-    if test x$GCC = xyes; then
-	if test x$machine = xi486; then
-	  mflag=486
-	fi
-	if test x$machine = xi586; then
-	  mflag=486
-	fi
-        if test x$mflag = x486; then
-            CCOPTS='-m486 -Wtraditional -Wundef -Wpointer-arith -Wbad-function-cast -Wcast-qual -Wcast-align  -Wwrite-strings -Wsign-compare -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wmissing-noreturn -Wnested-externs -O2 -m486 -fstrength-reduce -ffast-math -fomit-frame-pointer' 
-	    if test x$use_cc_g_flag = xyes; then
-		if test $cc_uses_g = yes; then
-		    CCOPTS='-m486 -g -O'
-		fi
-	    fi
-	else
-            CCOPTS='-O2 -fstrength-reduce -ffast-math -fomit-frame-pointer' 
-	    if test x$use_cc_g_flag = xyes; then
-		if test $cc_uses_g = yes; then
-		    CCOPTS='-g -O'
-		fi
-	    fi
-	fi
-    else
-	if test x$use_cc_g_flag = xyes; then
-	    CCOPTS="$CFLAGS"
-	else
-	    CCOPTS=
-	fi
-    fi
-fi
-
-CFLAGS="$CCOPTS"
 dnl command line options
 
 AC_ARG_WITH(x11-driver,

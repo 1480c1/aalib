@@ -5,6 +5,7 @@ Noteworthly changes in aalib-1.3 are:
   - Manual pages
   - Comments in aalib.h
   - Many "const" keywords added
+  - Configure no longer attempts to guess optimization switches.
 
 Noteworthly changes in aalib-1.1 are: 
 

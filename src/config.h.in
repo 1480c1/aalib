@@ -81,3 +81,10 @@
 
 /* Define if you have the slang library (-lslang).  */
 #undef HAVE_LIBSLANG
+
+/* Name of package */
+#undef PACKAGE
+
+/* Version number of package */
+#undef VERSION
+
