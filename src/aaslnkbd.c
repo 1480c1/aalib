@@ -17,7 +17,7 @@ static FILE *f;
 static jmp_buf buf;
 int __slang_keyboard;
 extern int __slang_is_up;
-extern int __resized_slang;
+extern volatile int __resized_slang;
 /*extern int __curses_usegpm; */
 static int uninitslang;
 #if 0

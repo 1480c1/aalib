@@ -16,7 +16,7 @@
 static int iswaiting;
 static jmp_buf buf;
 extern int __curses_is_up;
-extern int __resized_curses;
+extern volatile int __resized_curses;
 #ifdef GPM_MOUSEDRIVER
 extern int __curses_usegpm;
 #endif
