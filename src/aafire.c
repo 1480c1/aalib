@@ -144,7 +144,7 @@ static void
 game (void)
 {
   gentable ();
-  while (aa_getevent(context, 0) == AA_NONE) {
+  while (aa_getevent(context, 0) == AA_NONE)
     {
       drawfire ();
     }
