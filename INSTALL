@@ -13,7 +13,7 @@ For Unix
 
 For DOS:
    you need to compile vga/text libraries:
-   (available at ftp://ftp.ta.jcu.cz/pub/aa/dos)
+   (available at AA-lib homepage http://aa-project.sourceforge.net/aalib/)
      cd ../vga
      make
      cd ../text

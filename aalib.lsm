@@ -12,11 +12,11 @@ Description:    AA-lib is a low level gfx library just as many other libraries a
 		libraries. Learning a new API would be a piece of cake!
 
 Keywords:       X11 ascii-art text cool art ironing cooking fire library c GNU
-Author:         hubicka@limax.paru.cas.cz (Jan Hubicka)
-		toman@horac.ta.jcu.cz (Kamil Toman)
-Maintained-by:  hubicka@limax.paru.cas.cz (Jan Hubicka)
+Author:         hubicka@freesoft.cz (Jan Hubicka)
+		toman@artax.karlin.mff.cuni.cz (Kamil Toman)
+Maintained-by:  hubicka@freesoft.cz (Jan Hubicka)
 
-Primary-site:   aa-project.sourceforge.net /pub/aa/aalib
+Primary-site:   ftp.debian.org /pub/sourceforge/aa-project/
 		aalib-1.4.tar.gz
 
 Platform:       any UNIX with X11 with ansi-c compiler, Dos, stdio,
