@@ -51,7 +51,7 @@ struct aa_graphics {
     int boldcolor;
     int specialcolor;
     char charset[AA_NATTRS];
-}
+};
 
 void __aa_calcparams(__AA_CONST struct aa_font *font,
 		     struct parameters *parameters,

@@ -9,9 +9,11 @@
 
 #include "config.h"
 #ifdef LINUX_DRIVER
+#include <sys/time.h>
+#include <sys/types.h>
+#include <unistd.h>
 #include <stdio.h>
 #include <fcntl.h>
-#include <unistd.h>
 #include <signal.h>
 #include <termios.h>
 #include <sys/ioctl.h>
@@ -20,8 +22,6 @@
 #include <linux/vt.h>		/* for VT stuff - nah, really? :) */
 #include <string.h>
 #include <setjmp.h>
-#include <sys/time.h>
-#include <sys/types.h>
 #ifdef GPM_MOUSEDRIVER
 #include <gpm.h>
 #endif
