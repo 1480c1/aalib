@@ -7,6 +7,7 @@ Noteworthly changes in aalib-1.3 are:
   - Many "const" keywords added
   - Configure no longer attempts to guess optimization switches.
   - c2man generated manual pages added
+  - X driver now allows setting font using AAFont environment variable
 
 Noteworthly changes in aalib-1.1 are: 
 

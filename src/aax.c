@@ -14,8 +14,37 @@ __AA_CONST struct aa_driver X11_d;
 #define dr (d->pixmapmode?d->pi:d->wi)
 static void X_flush(aa_context * c);
 
+static int font_error;
+static int
+mygetpixel (XImage * image, int pos, int y)
+{
+  int width = image->width;
+  int i;
+  int sum = font_error;
+  int start = (pos * width + 4) / 8;
+  int end = ((pos + 1) * width + 4) / 8;
+  if (start == end)
+    {
+      if (start == image->width - 1)
+	start--;
+      else
+	end++;
+    }
+  for (i = start; i < end; i++)
+    sum += XGetPixel (image, i, y) != 0;
+  if (sum <= (end - start) / 2)
+    {
+      font_error = sum;
+      return 0;
+    }
+  else
+    font_error = -(end - start - sum);
+  return 1;
+}
+
 static int X_init(__AA_CONST struct aa_hardware_params *p, __AA_CONST void *none,struct aa_hardware_params *dest, void **driverdata)
 {
+    const char *font = "8x13bold";
     static int registered;
     static aa_font aafont;
     static XColor c;
@@ -39,7 +68,9 @@ static int X_init(__AA_CONST struct aa_hardware_params *p, __AA_CONST void *none
     if ((d->dp = XOpenDisplay(NULL)) == NULL)
 	return 0;
     d->screen = DefaultScreen(d->dp);
-    d->font = XLoadFont(d->dp, "8x13bold");
+    if (getenv ("AAFont"))
+      font = getenv ("AAFont");
+    d->font = XLoadFont(d->dp, font);
     if (!d->font) {
 	XCloseDisplay(d->dp);
 	return 0;
@@ -51,6 +82,7 @@ static int X_init(__AA_CONST struct aa_hardware_params *p, __AA_CONST void *none
     }
     d->fontheight = d->font_s->max_bounds.ascent + d->font_s->max_bounds.descent;
     d->fontwidth = d->font_s->max_bounds.rbearing - d->font_s->min_bounds.lbearing;
+    d->realfontwidth = d->font_s->max_bounds.width;
     d->cmap = DefaultColormap(d->dp, d->screen);
     d->black = d->attr.border_pixel = d->attr.background_pixel = BlackPixel(d->dp, d->screen);
     d->bold = WhitePixel(d->dp, d->screen);
@@ -93,10 +125,10 @@ static int X_init(__AA_CONST struct aa_hardware_params *p, __AA_CONST void *none
 	d->height = p->maxheight;
     if (p->minheight && d->height < p->minheight)
 	d->height = p->minheight;
-    d->wi = XCreateWindow(d->dp, RootWindow(d->dp, d->screen), 0, 0, d->width * d->fontwidth, d->height * d->fontheight, 0, DefaultDepth(d->dp, d->screen), InputOutput, DefaultVisual(d->dp, d->screen), CWBackPixel | CWBorderPixel | CWEventMask, &d->attr);
+    d->wi = XCreateWindow(d->dp, RootWindow(d->dp, d->screen), 0, 0, d->width * d->realfontwidth, d->height * d->fontheight, 0, DefaultDepth(d->dp, d->screen), InputOutput, DefaultVisual(d->dp, d->screen), CWBackPixel | CWBorderPixel | CWEventMask, &d->attr);
     XSetWindowBackground(d->dp, d->wi, d->black);
     if (!registered) {
-	d->pi = XCreatePixmap(d->dp, d->wi, 8, d->fontheight * 256, 1);
+	d->pi = XCreatePixmap(d->dp, d->wi, d->fontwidth, d->fontheight * 256, 1);
 	if (d->pi) {
 	    int i;
 	    unsigned char c;
@@ -106,28 +138,29 @@ static int X_init(__AA_CONST struct aa_hardware_params *p, __AA_CONST void *none
 	    d->specialGC = XCreateGC(d->dp, d->pi, 0L, NULL);
 	    XSetForeground(d->dp, d->specialGC, 0);
 	    XSetBackground(d->dp, d->specialGC, 0);
-	    XFillRectangle(d->dp, d->pi, d->specialGC, 0, 0, 8, 256 * d->fontheight);
+	    XFillRectangle(d->dp, d->pi, d->specialGC, 0, 0, d->fontwidth, 256 * d->fontheight);
 	    XSetForeground(d->dp, d->specialGC, 1);
 	    XSetFont(d->dp, d->specialGC, d->font);
 	    for (i = 0; i < 256; i++) {
 		c = i;
 		XDrawString(d->dp, d->pi, d->specialGC, 0, (i + 1) * d->fontheight - d->font_s->descent, (char *)&c, 1);
 	    }
-	    image = XGetImage(d->dp, d->pi, 0, 0, 8, 256 * d->fontheight, 1, XYPixmap);
+	    image = XGetImage(d->dp, d->pi, 0, 0, d->fontwidth, 256 * d->fontheight, 1, XYPixmap);
 	    if (image != NULL) {
 		data = malloc(256 * d->fontheight);
 		for (i = 0; i < 256; i++) {
 		    int y;
+		    font_error = 0;
 		    for (y = 0; y < d->fontheight; y++) {
 			int o;
-			o = ((XGetPixel(image, 0, i * d->fontheight + y) != 0) << 7) +
-			    ((XGetPixel(image, 1, i * d->fontheight + y) != 0) << 6) +
-			    ((XGetPixel(image, 2, i * d->fontheight + y) != 0) << 5) +
-			    ((XGetPixel(image, 3, i * d->fontheight + y) != 0) << 4) +
-			    ((XGetPixel(image, 4, i * d->fontheight + y) != 0) << 3) +
-			    ((XGetPixel(image, 5, i * d->fontheight + y) != 0) << 2) +
-			    ((XGetPixel(image, 6, i * d->fontheight + y) != 0) << 1) +
-			    ((XGetPixel(image, 7, i * d->fontheight + y) != 0) << 0);
+			o = ((mygetpixel(image, 0, i * d->fontheight + y) != 0) << 7) +
+			    ((mygetpixel(image, 1, i * d->fontheight + y) != 0) << 6) +
+			    ((mygetpixel(image, 2, i * d->fontheight + y) != 0) << 5) +
+			    ((mygetpixel(image, 3, i * d->fontheight + y) != 0) << 4) +
+			    ((mygetpixel(image, 4, i * d->fontheight + y) != 0) << 3) +
+			    ((mygetpixel(image, 5, i * d->fontheight + y) != 0) << 2) +
+			    ((mygetpixel(image, 6, i * d->fontheight + y) != 0) << 1) +
+			    ((mygetpixel(image, 7, i * d->fontheight + y) != 0) << 0);
 			data[i * d->fontheight + y] = o;
 		    }
 		}
@@ -157,10 +190,6 @@ static int X_init(__AA_CONST struct aa_hardware_params *p, __AA_CONST void *none
     d->blackGC = XCreateGC(d->dp, d->wi, 0L, NULL);
     XSetForeground(d->dp, d->blackGC, d->black);
     d->currGC = d->normalGC;
-    d->mmwidth = DisplayWidthMM(d->dp, d->screen);
-    d->mmheight = DisplayHeightMM(d->dp, d->screen);
-    dest->mmwidth = d->mmwidth * d->width * d->fontwidth / DisplayWidth(d->dp, d->screen);
-    dest->mmheight = d->mmheight * d->height * d->fontheight / DisplayHeight(d->dp, d->screen);
     d->pixelwidth = -1;
     d->pixelheight = -1;
     XSync(d->dp, 0);
@@ -198,9 +227,9 @@ int __aa_X_getsize(struct aa_context *c,struct xdriverdata *d)
 	    free(d->previoust), free(d->previousa);
 	d->previoust=NULL;
 	d->previousa=NULL;
+	c->driverparams.mmwidth = DisplayWidthMM(d->dp, d->screen) * d->pixelwidth / DisplayWidth(d->dp, d->screen);
+	c->driverparams.mmheight = DisplayHeightMM(d->dp, d->screen) * d->pixelheight / DisplayHeight(d->dp, d->screen);
     }
-    c->driverparams.mmwidth = d->mmwidth * d->width * d->fontwidth / DisplayWidth(d->dp, d->screen);
-    c->driverparams.mmheight = d->mmheight * d->height * d->fontheight / DisplayHeight(d->dp, d->screen);
     XSync(d->dp, 0);
     return (tmp);
 }
@@ -217,7 +246,7 @@ static void X_getsize(aa_context * c, int *width1, int *height1)
 {
     struct xdriverdata *d=c->driverdata;
     __aa_X_getsize(c,d);
-    *width1 = d->width = d->pixelwidth / d->fontwidth;
+    *width1 = d->width = d->pixelwidth / d->realfontwidth;
     *height1 = d->height = d->pixelheight / d->fontheight;
 }
 static void X_setattr(struct xdriverdata *d,int attr)
@@ -304,7 +333,7 @@ static void MyDrawString(struct xdriverdata *d,int attr, int x, int y, unsigned 
 	break;
     }
     it = &texty(y, a, nitem[y][a]);
-    it->delta = x * d->fontwidth - startitem[y][a];
+    it->delta = x * d->realfontwidth - startitem[y][a];
     if (!it->delta && x) {
 	it--;
 	it->nchars += i;
@@ -315,25 +344,23 @@ static void MyDrawString(struct xdriverdata *d,int attr, int x, int y, unsigned 
 	it->font = d->font;
 	drawed = 1;
     }
-    startitem[y][a] = (x + i) * d->fontwidth;
-
+    startitem[y][a] = (x + i) * d->realfontwidth;
     rect = &rectangles(n, nrectangles[n]);
-    rect->x = x * d->fontwidth;
+    rect->x = x * d->realfontwidth;
     rect->y = (y) * d->fontheight + 1;
-    rect->width = i * d->fontwidth;
+    rect->width = i * d->realfontwidth;
     if (nrectangles[n] && (rect - 1)->y == rect->y &&
 	(rect - 1)->x + (rect - 1)->width == rect->x)
-	nrectangles[n]--, (--rect)->width += i * d->fontwidth;
+	nrectangles[n]--, (--rect)->width += i * d->realfontwidth;
     rect->height = d->fontheight;
     nrectangles[n]++;
-
     rect = &rectangles(n, nrectangles[3]);
-    rect->x = x * d->fontwidth;
+    rect->x = x * d->realfontwidth;
     rect->y = (y) * d->fontheight + 1;
-    rect->width = i * d->fontwidth;
+    rect->width = i * d->realfontwidth;
     if (nrectangles[3] && (rect - 1)->y == rect->y &&
 	(rect - 1)->x + (rect - 1)->width == rect->x)
-	nrectangles[3]--, (--rect)->width += i * d->fontwidth;
+	nrectangles[3]--, (--rect)->width += i * d->realfontwidth;
     rect->height = d->fontheight;
     nrectangles[3]++;
     area += i;
@@ -406,7 +433,7 @@ static void X_flush(aa_context * c)
 	if (nrectangles[2])
 	    XFillRectangles(d->dp, dr, d->specialGC, &rectangles(2, 0), nrectangles[2]);
 	if (d->cvisible)
-	    XDrawLine(d->dp, dr, d->normalGC, d->Xpos * d->fontwidth, (d->Ypos + 1) * d->fontheight - 1, (d->Xpos + 1) * d->fontwidth - 1, (d->Ypos + 1) * d->fontheight - 1);
+	    XDrawLine(d->dp, dr, d->normalGC, d->Xpos * d->realfontwidth, (d->Ypos + 1) * d->fontheight - 1, (d->Xpos + 1) * d->realfontwidth - 1, (d->Ypos + 1) * d->fontheight - 1);
 
 	for (y = 0; y < d->height; y++) {
 	    for (x = 0; x < NATT; x++) {

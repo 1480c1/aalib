@@ -12,6 +12,7 @@ Changes in version 1.3
   o	Rest of changelog was lost in the disc crash....
   o	Fixed X driver handling of refresh
   o	Optimized X driver
+  o	X driver now allows setting font using AAFont environment variable
 
 Changes in version 1.1
  Fixes:

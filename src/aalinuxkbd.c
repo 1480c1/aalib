@@ -401,7 +401,9 @@ static void linux_uninit(aa_context * c)
 #endif
     rawmode_exit();
 }
+#ifdef GPM_MOUSEDRIVER
 extern int __gpm_user_handler(Gpm_Event * event, void *data);
+#endif
 static int linux_getchar(aa_context * c1, int wait)
 {
 #ifdef GPM_MOUSEDRIVER

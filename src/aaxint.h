@@ -5,6 +5,7 @@ struct xdriverdata {
   XSetWindowAttributes attr;
   int fontheight;
   int fontwidth;
+  int realfontwidth;
   GC normalGC, dimGC, boldGC, currGC, specialGC;
   int cvisible;
   GC blackGC;
