@@ -47,8 +47,8 @@ extern "C" {
 #endif
 
 #define AA_LIB_VERSION 1
-#define AA_LIB_MINNOR 3
-#define AA_LIB_VERSIONCODE 103000
+#define AA_LIB_MINNOR 4
+#define AA_LIB_VERSIONCODE 104000
 
 #define AA_NATTRS 5
 #define AA_NPARAMS 5
