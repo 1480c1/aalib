@@ -595,7 +595,7 @@ Ditherng options:
 @subsection How does the autodetection work
 
 To fully understand customizing of @code{aa_autoinit} you have to know (at least
-something ) how does the autodetection work.
+something) how does the autodetection work.
 
 All hardware drivers are stored in @code{aa_drivers} array --- array of
 pointers to drivers terminated by @code{NULL} pointer. Order is significant.
@@ -1358,7 +1358,7 @@ Second parameter is pointer to user data that should be passed by application.
 It is @code{NULL} by default. Last is pointer to hardware_params structure,
 where driver will put parameters of initialized device.
 This structure holds information about atributes and parameters supported
-by your driver. @xref{Initialization for image saving}
+by your driver. @xref{Initialization for image saving}.
 Just first two fields are used (@code{font} and @code{supported}).
 @var{Font} is pointer to font structure used by hardware. This field should be filed
 at runtime (see @code{aalinux.c} for example), set statically to one of
@@ -1381,7 +1381,7 @@ data, it should alloc driverdata structure, that will hold this data. AAlib
 will automatically free this pointer at @code{aa_close} if it is non-NULL.
 
 This function should also recomend best available keyboard and mouse drivers.
-@xref{How does the autodetection work}
+@xref{How does the autodetection work}.
 @end deffn
 
 @deffn Function uninit
@@ -1460,7 +1460,7 @@ or @code{AA_SENDRELEASE} in case application wants to be informed about
 key releases too. Note that driver should send releases even @var{mode} is 0.
 
 This function should also recomend best available mouse driver.
-@xref{How does the autodetection work}
+@xref{How does the autodetection work}.
 @end deffn
 
 @deffn Function uninit
