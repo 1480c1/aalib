@@ -113,7 +113,7 @@ static int tty_fd = -1, restart_con, alt_pressed;
 static struct termios new_termio, old_termio;
 static int vtswitch_allowed;
 
-static int key_down[128];
+static char key_down[128];
 static int closed = 1;
 static int mypid;
 
@@ -289,7 +289,10 @@ static int scan_keyboard(void)
     key = c & 127;
     flag = (c & 128) ? 0 : 1;	/* 1 = down */
 
-    key_down[key] = flag;
+    if (flag || key_down[key] != flag)
+      key_down[key] = flag;
+    else
+      return (scan_keyboard ());
 
     if (key == LEFT_ALT)
 	alt_pressed = flag;
@@ -369,6 +372,8 @@ static int linux_init(struct aa_context *context, int mode)
 {
     int i;
     struct sigaction siga;
+    if (!(mode & AA_SENDRELEASE))
+	return 0;
     if (!rawmode_init())
 	return 0;
 #ifdef SIGWINCH

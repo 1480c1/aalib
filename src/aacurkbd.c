@@ -53,6 +53,7 @@ static int curses_init(struct aa_context *context, int mode)
 #ifdef GPM_MOUSEDRIVER
     aa_recommendlowmouse("gpm");
 #endif
+    aa_recommendlowkbd ("linux");
     aa_recommendlowmouse("curses");
     return 1;
 }

@@ -281,7 +281,7 @@ typedef struct aa_context aa_context;
 typedef struct aa_linkedlist aa_linkedlist;
 typedef struct aa_linkedlist aa_reclist;
 typedef struct aa_renderparams aa_renderparams;
-typedef struct aa_hardware_params aa_hardware_params;
+typedef struct aa_hardware_params aa_hardwareparams;
 typedef struct aa_driver aa_driver;
 typedef struct aa_font aa_font;
 typedef struct aa_format aa_format;

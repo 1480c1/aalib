@@ -31,6 +31,10 @@ static int slang_init(__AA_CONST struct aa_hardware_params *p,__AA_CONST  void *
     }
     SLsmg_Display_Eight_Bit = 128;
     dest->supported |= AA_EIGHT;
+#ifdef GPM_MOUSEDRIVER
+    aa_recommendlowmouse("gpm");
+#endif
+    aa_recommendlowkbd ("linux");
     aa_recommendlowkbd("slang");
     return 1;
 }

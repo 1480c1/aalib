@@ -12,6 +12,7 @@ struct aa_driver X11_d;
 #define C2 0x68
 #define C1 0xB2
 #define dr (d->pixmapmode?d->pi:d->wi)
+static void X_flush(aa_context * c);
 
 static int X_init(__AA_CONST struct aa_hardware_params *p, __AA_CONST void *none,struct aa_hardware_params *dest, void **driverdata)
 {
@@ -93,6 +94,7 @@ static int X_init(__AA_CONST struct aa_hardware_params *p, __AA_CONST void *none
     if (p->minheight && d->height < p->minheight)
 	d->height = p->minheight;
     d->wi = XCreateWindow(d->dp, RootWindow(d->dp, d->screen), 0, 0, d->width * d->fontwidth, d->height * d->fontheight, 0, DefaultDepth(d->dp, d->screen), InputOutput, DefaultVisual(d->dp, d->screen), CWBackPixel | CWBorderPixel | CWEventMask, &d->attr);
+    XSetWindowBackground(d->dp, d->wi, d->black);
     if (!registered) {
 	d->pi = XCreatePixmap(d->dp, d->wi, 8, d->fontheight * 256, 1);
 	if (d->pi) {
@@ -159,8 +161,8 @@ static int X_init(__AA_CONST struct aa_hardware_params *p, __AA_CONST void *none
     d->mmheight = DisplayHeightMM(d->dp, d->screen);
     dest->mmwidth = d->mmwidth * d->width * d->fontwidth / DisplayWidth(d->dp, d->screen);
     dest->mmheight = d->mmheight * d->height * d->fontheight / DisplayHeight(d->dp, d->screen);
-    d->pixelwidth = d->fontwidth * d->width;
-    d->pixelheight = d->fontheight * d->height;
+    d->pixelwidth = -1;
+    d->pixelheight = -1;
     XSync(d->dp, 0);
     aa_recommendlowkbd("X11");
     return 1;
@@ -178,20 +180,24 @@ int __aa_X_getsize(struct aa_context *c,struct xdriverdata *d)
     d->pixelwidth = px;
     d->pixelheight = py;
     if (tmp) {
-	if (d->previoust != NULL)
-	    free(d->previoust), free(d->previousa), d->previoust = NULL, d->previousa = NULL;
 	if (d->pixmapmode)
-	    XFreePixmap(d->dp, d->pi), d->pixmapmode = 0;
-    }
-    if (!d->pixmapmode && !getenv("AABlink"))
-	d->pi = XCreatePixmap(d->dp, d->wi, d->pixelwidth, d->pixelheight, DefaultDepth(d->dp, d->screen));
-    if (!d->pi) {
-	d->pixmapmode = 0;
-	XSetWindowBackgroundPixmap(d->dp, d->wi, d->black);
-    } else {
-	d->pixmapmode = 1;
-	XSetWindowBackgroundPixmap(d->dp, d->wi, d->pi);
-	XFillRectangle(d->dp, d->pi, d->blackGC, 0, 0, d->pixelwidth, d->pixelheight);
+	    XFreePixmap(d->dp, d->pi);
+	if (!getenv("AABlink"))
+	  d->pi = XCreatePixmap(d->dp, d->wi, d->pixelwidth, d->pixelheight, DefaultDepth(d->dp, d->screen));
+	else
+	  d->pi = BadAlloc;
+	if (d->pi == BadAlloc) {
+	    d->pixmapmode = 0;
+	    XSetWindowBackground(d->dp, d->wi, d->black);
+	} else {
+	    d->pixmapmode = 1;
+	    XFillRectangle(d->dp, d->pi, d->blackGC, 0, 0, d->pixelwidth, d->pixelheight);
+	    XSetWindowBackgroundPixmap(d->dp, d->wi, d->pi);
+	}
+	if (d->previoust != NULL)
+	    free(d->previoust), free(d->previousa);
+	d->previoust=NULL;
+	d->previousa=NULL;
     }
     c->driverparams.mmwidth = d->mmwidth * d->width * d->fontwidth / DisplayWidth(d->dp, d->screen);
     c->driverparams.mmheight = d->mmheight * d->height * d->fontheight / DisplayHeight(d->dp, d->screen);
@@ -240,14 +246,15 @@ static XTextItem *_texty;
 static int (*nitem)[NATT];
 static int (*startitem)[NATT];
 static XRectangle *_rectangles;
-static int nrectangles[3];
+static int nrectangles[4];
 static int drawed;
+static int area;
 static void alloctables(struct xdriverdata *d)
 {
     _texty = malloc(sizeof(XTextItem) * d->width * NATT * d->height);
     nitem = calloc(sizeof(*nitem) * d->height,1);
     startitem = calloc(sizeof(*startitem) * d->height,1);
-    _rectangles = malloc(sizeof(*_rectangles) * d->width * d->height * NATT);
+    _rectangles = malloc(sizeof(*_rectangles) * d->width * d->height * 4);
 }
 static void freetables(void)
 {
@@ -309,6 +316,7 @@ static void MyDrawString(struct xdriverdata *d,int attr, int x, int y, unsigned 
 	drawed = 1;
     }
     startitem[y][a] = (x + i) * d->fontwidth;
+
     rect = &rectangles(n, nrectangles[n]);
     rect->x = x * d->fontwidth;
     rect->y = (y) * d->fontheight + 1;
@@ -318,6 +326,17 @@ static void MyDrawString(struct xdriverdata *d,int attr, int x, int y, unsigned 
 	nrectangles[n]--, (--rect)->width += i * d->fontwidth;
     rect->height = d->fontheight;
     nrectangles[n]++;
+
+    rect = &rectangles(n, nrectangles[3]);
+    rect->x = x * d->fontwidth;
+    rect->y = (y) * d->fontheight + 1;
+    rect->width = i * d->fontwidth;
+    if (nrectangles[3] && (rect - 1)->y == rect->y &&
+	(rect - 1)->x + (rect - 1)->width == rect->x)
+	nrectangles[3]--, (--rect)->width += i * d->fontwidth;
+    rect->height = d->fontheight;
+    nrectangles[3]++;
+    area += i;
 }
 __AA_CONST static int Black[] =
 {0, 0, 0, 0, 1, 1};
@@ -334,9 +353,11 @@ static void X_flush(aa_context * c)
     attr = AA_NORMAL;
     alloctables(d);
     drawed = 0;
+    area = 0;
     nrectangles[0] = 0;
     nrectangles[1] = 0;
     nrectangles[2] = 0;
+    nrectangles[3] = 0;
     if (d->previoust == NULL) {
 	d->previoust = malloc(d->width * d->height);
 	d->previousa = calloc(d->width * d->height, 1);
@@ -398,7 +419,16 @@ static void X_flush(aa_context * c)
 	    }
 	}
 	if (d->pixmapmode) {
-	    XClearWindow(d->dp, d->wi);
+	    if (nrectangles[3] && area < d->width*d->height/2 && nrectangles[3] < 5)
+	      {
+		int i;
+	        /*fprintf (stderr, "%i %i\n",nrectangles[3], area);*/
+		for (i = 0; i < nrectangles[3]; i++)
+		  XClearArea (d->dp, d->wi, rectangles(3, i).x, rectangles(3,i).y,
+			      rectangles(3,i).width, rectangles(3,i).height, 0);
+	      }
+	    else
+	      XClearWindow(d->dp, d->wi);
 	}
 	/*if(!d->pixmapmode) */
 	XSync(d->dp, 0);
@@ -408,8 +438,7 @@ static void X_flush(aa_context * c)
 void __aa_X_redraw(aa_context *c)
 {
     struct xdriverdata *d=c->driverdata;
-    if (d->pixmapmode) {
-	    XClearWindow(d->dp, d->wi);
+    if (d->pixmapmode && d->previoust != NULL) {
 	    XFlush(d->dp);
 	    return;
     }
